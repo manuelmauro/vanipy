@@ -4,7 +4,7 @@ import click
 from rich.console import Console
 
 from vanipy.query import Query
-from vanipy.result import Result, result_table
+from vanipy.result import Result, table_out, json_out
 
 
 @click.group(help="A tool for very superficial Algorand addresses.")
@@ -34,11 +34,11 @@ def prefix(ctx, prefixes, json_):
         results.append(Result(pk=vanity_pk, address=vanity_address))
 
     if json_:
-        json_out = json.dumps([r.dictify() for r in results])
-        print(json_out)
+        out = json_out(results)
+        print(out)
         return 0
 
-    table = result_table(results)
+    table = table_out(results)
     console = Console()
     console.print(table)
     return 0

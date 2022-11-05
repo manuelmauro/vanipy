@@ -20,7 +20,7 @@ class Result():
         return mnemonic.from_private_key(self.pk)
 
 
-def result_table(results: list[Result]) -> Table:
+def table_out(results: list[Result]) -> Table:
     table = Table(title="Loads of Vanity", show_lines=True)
 
     table.add_column("Address", style="magenta")
@@ -34,3 +34,7 @@ def result_table(results: list[Result]) -> Table:
         table.add_row(result.address, result.pk, result.mnemonic())
 
     return table
+
+
+def json_out(results: list[Result]) -> str:
+    return json.dumps([r.dictify() for r in results])
