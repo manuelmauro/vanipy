@@ -17,10 +17,8 @@ def vanipy(ctx):
 @vanipy.command(help="Generate a vanity address with a given prefix.")
 @click.argument("prefixes", nargs=-1)
 @click.option("--json", "json_", is_flag=True, help="Output as JSON.")
-@click.pass_context
-def prefix(ctx, prefixes, json_):
+def prefix(prefixes, json_):
     queries = []
-    results = []
     for prefix in prefixes:
         query = Query(q=prefix, type_=QueryType.PREFIX)
         if not query.is_valid():
@@ -29,6 +27,7 @@ def prefix(ctx, prefixes, json_):
 
         queries.append(query)
 
+    results = []
     for query in queries:
         results.append(vanity_search(query))
 
@@ -46,10 +45,8 @@ def prefix(ctx, prefixes, json_):
 @vanipy.command(help="Generate a vanity address satisfying a given regex.")
 @click.argument("regexes", nargs=-1)
 @click.option("--json", "json_", is_flag=True, help="Output as JSON.")
-@click.pass_context
-def regex(ctx, regexes, json_):
+def regex(regexes, json_):
     queries = []
-    results = []
     for regex in regexes:
         query = Query(q=regex, type_=QueryType.REGEX)
 
@@ -59,6 +56,7 @@ def regex(ctx, regexes, json_):
 
         queries.append(query)
 
+    results = []
     for query in queries:
         results.append(vanity_search(query))
 
