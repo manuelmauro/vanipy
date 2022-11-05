@@ -27,9 +27,7 @@ def prefix(prefixes, json_):
 
         queries.append(query)
 
-    results = []
-    for query in queries:
-        results.append(vanity_search(query))
+    results = [vanity_search(q) for q in queries]
 
     if json_:
         out = json_out(results)
@@ -56,9 +54,7 @@ def regex(regexes, json_):
 
         queries.append(query)
 
-    results = []
-    for query in queries:
-        results.append(vanity_search(query))
+    results = [vanity_search(q) for q in queries]
 
     if json_:
         out = json_out(results)
