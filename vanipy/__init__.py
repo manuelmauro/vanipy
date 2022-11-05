@@ -1,9 +1,8 @@
-import json
 from algosdk import account
 import click
 from rich.console import Console
 
-from vanipy.query import Query
+from vanipy.query import Query, QueryType
 from vanipy.result import Result, table_out, json_out
 
 
@@ -22,13 +21,43 @@ def vanipy(ctx):
 def prefix(ctx, prefixes, json_):
     results = []
     for prefix in prefixes:
-        query = Query(q=prefix)
+        query = Query(q=prefix, type_=QueryType.PREFIX)
         if not query.is_valid():
             print("Invalid pattern. Please, specify a base32 prefix.")
             return 1
 
         vanity_pk, vanity_address = account.generate_account()
-        while (not vanity_address.startswith(prefix)):
+        while (not query.matched_by(vanity_address)):
+            vanity_pk, vanity_address = account.generate_account()
+
+        results.append(Result(pk=vanity_pk, address=vanity_address))
+
+    if json_:
+        out = json_out(results)
+        print(out)
+        return 0
+
+    table = table_out(results)
+    console = Console()
+    console.print(table)
+    return 0
+
+
+@vanipy.command(help="Generate a vanity address satisfying a given regex.")
+@click.argument("regexes", nargs=-1)
+@click.option("--json", "json_", is_flag=True, help="Output as JSON.")
+@click.pass_context
+def regex(ctx, regexes, json_):
+    results = []
+    for regex in regexes:
+        query = Query(q=regex, type_=QueryType.REGEX)
+
+        if not query.is_valid():
+            print("Invalid pattern. Please, specify a Python regex.")
+            return 1
+
+        vanity_pk, vanity_address = account.generate_account()
+        while (not query.matched_by(vanity_address)):
             vanity_pk, vanity_address = account.generate_account()
 
         results.append(Result(pk=vanity_pk, address=vanity_address))

@@ -36,5 +36,8 @@ def table_out(results: list[Result]) -> Table:
     return table
 
 
-def json_out(results: list[Result]) -> str:
+def json_out(results: list[Result] | Result) -> str:
+    if type(results) is not list:
+        return json.dumps(results.dictify())
+
     return json.dumps([r.dictify() for r in results])
