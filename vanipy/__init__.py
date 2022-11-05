@@ -1,9 +1,9 @@
-from algosdk import account
 import click
 from rich.console import Console
 
 from vanipy.query import Query, QueryType
-from vanipy.result import Result, table_out, json_out
+from vanipy.result import table_out, json_out
+from vanipy.vanity import vanity_search
 
 
 @click.group(help="A tool for very superficial Algorand addresses.")
@@ -19,6 +19,7 @@ def vanipy(ctx):
 @click.option("--json", "json_", is_flag=True, help="Output as JSON.")
 @click.pass_context
 def prefix(ctx, prefixes, json_):
+    queries = []
     results = []
     for prefix in prefixes:
         query = Query(q=prefix, type_=QueryType.PREFIX)
@@ -26,11 +27,10 @@ def prefix(ctx, prefixes, json_):
             print("Invalid pattern. Please, specify a base32 prefix.")
             return 1
 
-        vanity_pk, vanity_address = account.generate_account()
-        while (not query.matched_by(vanity_address)):
-            vanity_pk, vanity_address = account.generate_account()
+        queries.append(query)
 
-        results.append(Result(pk=vanity_pk, address=vanity_address))
+    for query in queries:
+        results.append(vanity_search(query))
 
     if json_:
         out = json_out(results)
@@ -48,6 +48,7 @@ def prefix(ctx, prefixes, json_):
 @click.option("--json", "json_", is_flag=True, help="Output as JSON.")
 @click.pass_context
 def regex(ctx, regexes, json_):
+    queries = []
     results = []
     for regex in regexes:
         query = Query(q=regex, type_=QueryType.REGEX)
@@ -56,11 +57,10 @@ def regex(ctx, regexes, json_):
             print("Invalid pattern. Please, specify a Python regex.")
             return 1
 
-        vanity_pk, vanity_address = account.generate_account()
-        while (not query.matched_by(vanity_address)):
-            vanity_pk, vanity_address = account.generate_account()
+        queries.append(query)
 
-        results.append(Result(pk=vanity_pk, address=vanity_address))
+    for query in queries:
+        results.append(vanity_search(query))
 
     if json_:
         out = json_out(results)
